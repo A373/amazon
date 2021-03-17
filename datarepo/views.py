@@ -1,0 +1,349 @@
+from rest_framework import status
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .models import Product, Category
+from django.db import IntegrityError
+
+
+# Create your views here.
+@api_view(['GET', 'POST', 'PATCH', 'DELETE'])
+def product(request):
+    if request.method == 'GET':
+        product_id = request.GET.get('product_id', None)
+        if product_id is None:
+            content = {
+                'message': 'product_id is mandatory'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            try:
+                product_info = Product.objects.get(id=product_id)
+                content = {
+                    'name': product_info.name,
+                    'price': product_info.price,
+                    'category_id': product_info.category_id,
+                    'category_name': product_info.category.name,
+                }
+                return Response(content, status=status.HTTP_200_OK)
+            except Product.DoesNotExist:
+                content = {
+                    'message': 'product_id is invalid'
+                }
+                return Response(content, status=status.HTTP_400_BAD_REQUEST)
+            except ValueError:
+                content = {
+                    'message': 'product_id should be integer'
+                }
+                return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'POST':
+        category_id = request.POST.get('category_id', None)
+        name = request.POST.get('name', None)
+        price = request.POST.get('price', None)
+        if category_id is None or name is None or price is None:
+            content = {
+                'message': 'category_id or name or price fields are mandatory'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        if name.lstrip() == ' ':
+            content = {
+                'message': 'name cannot be empty'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            new_product = Product.objects.create(
+                category_id=category_id,
+                name=name,
+                price=price
+            )
+            new_product.save()
+            content = {
+                'data': {
+                    'message': 'product has been created',
+                    'product_id': new_product.id,
+                    'name': new_product.name,
+                    'price': new_product.price,
+                    'category_id': new_product.category_id,
+                    'category_name': new_product.category.name,
+                }
+            }
+            return Response(content, status=status.HTTP_200_OK)
+        except ValueError:
+            content = {
+                'message': 'price has to be float'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError:
+            content = {
+                'message': 'invalid category id'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PATCH':
+        new_name = request.POST.get('name', None)
+        new_price = request.POST.get('price', None)
+        new_category_id = request.POST.get('category_id', None)
+        product_id = request.POST.get('product_id', None)
+        if product_id is None:
+            content = {
+                'message': 'product_id is mandatory'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            if new_name is not None and new_name.lstrip() == '':
+                content = {
+                    'message': 'name cannot be empty'
+                }
+                return Response(content, status=status.HTTP_400_BAD_REQUEST)
+            product_info = Product.objects.get(id=product_id)
+            product_info.name = new_name if new_name is not None else product_info.name
+            product_info.price = new_price if new_price is not None else product_info.price
+            product_info.category_id = new_category_id if new_category_id is not None else product_info.category_id
+            product_info.save()
+            content = {
+                'message': 'product has been updated',
+                'data': {
+                    'product_id': product_info.id,
+                    'name': product_info.name,
+                    'price': product_info.price,
+                    'category_id': product_info.category_id,
+                    'category_name': product_info.category.name
+
+                }
+            }
+            return Response(content, status=status.HTTP_201_CREATED)
+        except IntegrityError:
+            content = {
+                'message': 'invalid category id'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except Product.DoesNotExist:
+            content = {
+                'message': 'invalid product id'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            content = {
+                'message': str(e)
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == "DELETE":
+        product_id = request.POST.get('product_id', None)
+        if product_id is None:
+            content = {
+                'message': 'product_id is mandatory'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            product_info = Product.objects.get(id=product_id)
+            product_info.delete()
+            content = {
+                'message': 'product has been deleted'
+            }
+            return Response(content, status=status.HTTP_200_OK)
+        except Product.DoesNotExist:
+            content = {
+                'message': 'invalid product id'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError:
+            content = {
+                'message': 'product id must be an integer'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def products(request):
+    category_id = request.GET.get('category_id', None)
+    if category_id is None:
+        all_products = Product.objects.all()
+    elif category_id is not None:
+        try:
+            all_products = Product.objects.filter(category_id=category_id)
+        except ValueError:
+            content = {
+                'message': 'invalid category id'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    content = []
+    for temp_product in all_products:
+        temp = {
+            'product_id': temp_product.id,
+            'product_name': temp_product.name,
+            'product_price': temp_product.price,
+            'category_id': temp_product.category_id,
+            'category_name': temp_product.category.name,
+        }
+        content.append(temp)
+    return Response(content, status=status.HTTP_200_OK)
+
+
+# category
+@api_view(['GET', 'POST', 'PATCH', 'DELETE'])
+def category(request):
+    if request.method == 'GET':
+        category_id = request.GET.get('category_id', None)
+        if category_id is None:
+            content = {
+                'message': 'category_id is mandatory'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            try:
+                category_info = Category.objects.get(id=category_id)
+                content = {
+                    'name': category_info.name,
+                }
+                return Response(content, status=status.HTTP_200_OK)
+            except Category.DoesNotExist:
+                content = {
+                    'message': 'category id is invalid'
+                }
+                return Response(content, status=status.HTTP_400_BAD_REQUEST)
+            except ValueError:
+                content = {
+                    'message': 'category id should be integer'
+                }
+                return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'POST':
+        name = request.POST.get('name', None)
+        if name is None:
+            content = {
+                'message': 'name is mandatory'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        if name.isalpha() is not True:
+            content = {
+                'message': 'name must be a string'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            new_category = Category.objects.create(
+                name=name,
+            )
+            new_category.save()
+            content = {
+                'data': {
+                    'message': 'category has been created',
+                    'name': new_category.name,
+                }
+            }
+            return Response(content, status=status.HTTP_200_OK)
+        except ValueError:
+            content = {
+                'message': 'name has to be string'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except IntegrityError:
+            content = {
+                'message': 'invalid category id'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'PATCH':
+        new_name = request.POST.get('name', None)
+        category_id = request.POST.get('category_id', None)
+        if category_id is None:
+            content = {
+                'message': 'category_id is mandatory'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            if new_name.isalpha() is not True:
+                content = {
+                    'message': 'name must be a string'
+                }
+                return Response(content, status=status.HTTP_400_BAD_REQUEST)
+            category_info = Category.objects.get(id=category_id)
+            category_info.name = new_name if new_name is not None else category_info.name
+            category_info.save()
+            content = {
+                'message': 'category has been updated',
+                'data': {
+                    'category_id': category_info.id,
+                    'name': category_info.name,
+                }
+            }
+            return Response(content, status=status.HTTP_201_CREATED)
+        except IntegrityError:
+            content = {
+                'message': 'invalid category id'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except Category.DoesNotExist:
+            content = {
+                'message': 'invalid category id'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError as e:
+            content = {
+                'message': str(e)
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == "DELETE":
+        category_id = request.POST.get('category_id', None)
+        if category_id is None:
+            content = {
+                'message': 'category_id is mandatory'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        try:
+            category_info = Category.objects.get(id=category_id)
+            category_info.delete()
+            content = {
+                'message': 'category has been deleted'
+            }
+            return Response(content, status=status.HTTP_200_OK)
+        except Category.DoesNotExist:
+            content = {
+                'message': 'invalid product id'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+        except ValueError:
+            content = {
+                'message': 'category id must be an integer'
+            }
+            return Response(content, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def categories(request):
+    all_categories = Category.objects.all()
+    content = []
+    for category_ in all_categories:
+        temp = {
+            'category_id': category_.id,
+            'category_name': category_.name
+        }
+        content.append(temp)
+    return Response(content, status=status.HTTP_200_OK)
+
+
+@api_view(['GET'])
+def categories_details(request):
+    category_id = request.GET.get('category_id', None)
+    if category_id is None:
+        all_categories = Category.objects.all()
+    elif category_id is not None:
+        try:
+            all_categories = Category.objects.filter(id=category_id)
+        except ValueError:
+            content = {
+                'message': 'invalid category id'
+            }
+    content = []
+    for category_ in all_categories:
+        all_products = Product.objects.filter(category_id=category_.id)
+        products = []
+        for item_product in all_products:
+            temp = {
+                'product_id': item_product.id,
+                'product_name': item_product.name,
+                'product_price': item_product.price,
+            }
+            products.append(temp)
+        temp = {
+            'category_id': category_.id,
+            'category_name': category_.name,
+            'products': products,
+        }
+        content.append(temp)
+    return Response(content, status=status.HTTP_200_OK)
