@@ -16,11 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from datarepo.views import product, products, category, categories, categories_details
+from django.conf import settings
+from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('product/', product),
     path('products/', products),
     path('category/', category),
     path('categories/', categories),
-    path('categories/details/', categories_details)
-    ]
+    path('categories/details/', categories_details),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
