@@ -172,6 +172,11 @@ def products(request):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
     content = []
     for temp_product in all_products:
+        if temp_product.image:
+            image_url = temp_product.image.url
+        else:
+            image_url = None
+
         temp = {
             'product_id': temp_product.id,
             'product_name': temp_product.name,
@@ -179,6 +184,7 @@ def products(request):
             'image': temp_product.image,
             'category_id': temp_product.category_id,
             'category_name': temp_product.category.name,
+            'image_url': image_url,
         }
         content.append(temp)
     return Response(content, status=status.HTTP_200_OK)
