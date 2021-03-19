@@ -21,6 +21,7 @@ def product(request):
                 content = {
                     'name': product_info.name,
                     'price': product_info.price,
+                    'image': product_info.image.url,
                     'category_id': product_info.category_id,
                     'category_name': product_info.category.name,
                 }
@@ -64,7 +65,7 @@ def product(request):
                     'product_id': new_product.id,
                     'name': new_product.name,
                     'price': new_product.price,
-                    'image': new_product.image,
+                    'image': new_product.image.url,
                     'category_id': new_product.category_id,
                     'category_name': new_product.category.name,
                 }
@@ -109,7 +110,7 @@ def product(request):
                     'product_id': product_info.id,
                     'name': product_info.name,
                     'price': product_info.price,
-                    'image': product_info.image,
+                    'image': product_info.image.url,
                     'category_id': product_info.category_id,
                     'category_name': product_info.category.name
 
@@ -181,7 +182,6 @@ def products(request):
             'product_id': temp_product.id,
             'product_name': temp_product.name,
             'product_price': temp_product.price,
-            'image': temp_product.image,
             'category_id': temp_product.category_id,
             'category_name': temp_product.category.name,
             'image_url': image_url,
@@ -209,12 +209,12 @@ def category(request):
                 return Response(content, status=status.HTTP_200_OK)
             except Category.DoesNotExist:
                 content = {
-                    'message': 'category id is invalid'
+                    'message': 'category_id is invalid'
                 }
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
             except ValueError:
                 content = {
-                    'message': 'category id should be integer'
+                    'message': 'category_id should be integer'
                 }
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'POST':
@@ -248,7 +248,7 @@ def category(request):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         except IntegrityError:
             content = {
-                'message': 'invalid category id'
+                'message': 'invalid category_id'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'PATCH':
@@ -351,7 +351,7 @@ def categories_details(request):
                 'product_id': item_product.id,
                 'product_name': item_product.name,
                 'product_price': item_product.price,
-                'image': item_product.image,
+                'image': item_product.image.url,
             }
             products.append(temp)
         temp = {
