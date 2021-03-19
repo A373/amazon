@@ -39,21 +39,23 @@ def product(request):
         category_id = request.POST.get('category_id', None)
         name = request.POST.get('name', None)
         price = request.POST.get('price', None)
-        if category_id is None or name is None or price is None:
+        image = request.FILES.get('image', None)
+        if category_id is None or name is None or price or image is None:
             content = {
-                'message': 'category_id or name or price fields are mandatory'
+                'message': 'category_id or name or price or image fields are mandatory'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        if name.lstrip() == ' ':
+        if name.lstrip() == ' ' or category_id.lstrip() == ' ' or price.lstrip() == ' ' or image.lstrip() == ' ' is None:
             content = {
-                'message': 'name cannot be empty'
+                'message': 'name  or category_id or price or image cannot be empty'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         try:
             new_product = Product.objects.create(
                 category_id=category_id,
                 name=name,
-                price=price
+                price=price,
+                image=image,
             )
             new_product.save()
             content = {
@@ -62,6 +64,7 @@ def product(request):
                     'product_id': new_product.id,
                     'name': new_product.name,
                     'price': new_product.price,
+                    'image': new_product.image,
                     'category_id': new_product.category_id,
                     'category_name': new_product.category.name,
                 }
@@ -74,7 +77,7 @@ def product(request):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         except IntegrityError:
             content = {
-                'message': 'invalid category id'
+                'message': 'invalid category_id'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'PATCH':
@@ -82,6 +85,7 @@ def product(request):
         new_price = request.POST.get('price', None)
         new_category_id = request.POST.get('category_id', None)
         product_id = request.POST.get('product_id', None)
+        image = request.FILES.get('image', None)
         if product_id is None:
             content = {
                 'message': 'product_id is mandatory'
@@ -97,6 +101,7 @@ def product(request):
             product_info.name = new_name if new_name is not None else product_info.name
             product_info.price = new_price if new_price is not None else product_info.price
             product_info.category_id = new_category_id if new_category_id is not None else product_info.category_id
+            product_info.image = new_image if new_image is not None else product_info.image
             product_info.save()
             content = {
                 'message': 'product has been updated',
@@ -104,6 +109,7 @@ def product(request):
                     'product_id': product_info.id,
                     'name': product_info.name,
                     'price': product_info.price,
+                    'image': product_info.image,
                     'category_id': product_info.category_id,
                     'category_name': product_info.category.name
 
