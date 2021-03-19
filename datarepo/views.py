@@ -176,6 +176,7 @@ def products(request):
             'product_id': temp_product.id,
             'product_name': temp_product.name,
             'product_price': temp_product.price,
+            'image': temp_product.image,
             'category_id': temp_product.category_id,
             'category_name': temp_product.category.name,
         }
@@ -344,6 +345,7 @@ def categories_details(request):
                 'product_id': item_product.id,
                 'product_name': item_product.name,
                 'product_price': item_product.price,
+                'image': item_product.image,
             }
             products.append(temp)
         temp = {
