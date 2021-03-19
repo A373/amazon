@@ -41,12 +41,12 @@ def product(request):
         name = request.POST.get('name', None)
         price = request.POST.get('price', None)
         image = request.FILES.get('image', None)
-        if category_id is None or name is None or price or image is None:
+        if category_id is None or name is None or price is None or image is None:
             content = {
                 'message': 'category_id or name or price or image fields are mandatory'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        if name.lstrip() == ' ' or category_id.lstrip() == ' ' or price.lstrip() == ' ' or image.lstrip() == ' ' is None:
+        if name.lstrip() == ' ' is None or category_id is None or price is None or image is None:
             content = {
                 'message': 'name  or category_id or price or image cannot be empty'
             }
@@ -86,7 +86,7 @@ def product(request):
         new_price = request.POST.get('price', None)
         new_category_id = request.POST.get('category_id', None)
         product_id = request.POST.get('product_id', None)
-        image = request.FILES.get('image', None)
+        new_image = request.FILES.get('image', None)
         if product_id is None:
             content = {
                 'message': 'product_id is mandatory'
@@ -347,11 +347,15 @@ def categories_details(request):
         all_products = Product.objects.filter(category_id=category_.id)
         products = []
         for item_product in all_products:
+            if item_product.image:
+                image = item_product.image.url
+            else:
+                image = None
             temp = {
                 'product_id': item_product.id,
                 'product_name': item_product.name,
                 'product_price': item_product.price,
-                'image': item_product.image.url,
+                'image': image,
             }
             products.append(temp)
         temp = {
