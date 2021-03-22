@@ -351,7 +351,7 @@ def categories_details(request):
             if item_product.image:
                 image = item_product.image.url
             else:
-                image = None
+                 image = None
             temp = {
                 'product_id': item_product.id,
                 'product_name': item_product.name,
