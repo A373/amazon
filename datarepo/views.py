@@ -349,9 +349,7 @@ def categories_details(request):
         products = []
         for item_product in all_products:
             if item_product.image:
-               image = item_product.image.url
-
-               image = item_product.image.url
+                image = item_product.image.url
             else:
                  image = None
             temp = {
