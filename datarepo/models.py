@@ -5,6 +5,7 @@ from django.db import models
 
 class Category(models.Model):
     name = models.CharField(max_length=255)
+    image = models.ImageField(blank=True, null=True, default=None)
 
     def __str__(self):
         return str(self.id) + '-' + str(self.name)

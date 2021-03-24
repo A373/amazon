@@ -203,9 +203,14 @@ def category(request):
         else:
             try:
                 category_info = Category.objects.get(id=category_id)
-                content = {
-                    'name': category_info.name,
-                }
+                if category_info.image:
+                    image = category_info.image.url
+                else:
+                    content = {
+                        'name': category_info.name,
+                        'image': image,
+
+                    }
                 return Response(content, status=status.HTTP_200_OK)
             except Category.DoesNotExist:
                 content = {
@@ -219,9 +224,10 @@ def category(request):
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'POST':
         name = request.POST.get('name', None)
-        if name is None:
+        image = request.FILES.get('image', None)
+        if name is None or image is None:
             content = {
-                'message': 'name is mandatory'
+                'message': 'name or image is missing'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         if name.isalpha() is not True:
@@ -232,12 +238,18 @@ def category(request):
         try:
             new_category = Category.objects.create(
                 name=name,
+                image=image,
             )
             new_category.save()
+            if new_category.image:
+                image = new_category.image.url
+            else:
+                image = None
             content = {
                 'data': {
                     'message': 'category has been created',
                     'name': new_category.name,
+                    'image': image,
                 }
             }
             return Response(content, status=status.HTTP_200_OK)
@@ -253,6 +265,7 @@ def category(request):
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'PATCH':
         new_name = request.POST.get('name', None)
+        new_image = request.FILES.get('image', None)
         category_id = request.POST.get('category_id', None)
         if category_id is None:
             content = {
@@ -267,12 +280,18 @@ def category(request):
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
             category_info = Category.objects.get(id=category_id)
             category_info.name = new_name if new_name is not None else category_info.name
+            category_info.image = new_image if new_image is not None else category_info.image
             category_info.save()
+            if category_info.image:
+                image = category_info.image.url
+            else:
+                image = None
             content = {
                 'message': 'category has been updated',
                 'data': {
                     'category_id': category_info.id,
                     'name': category_info.name,
+                    'image': image,
                 }
             }
             return Response(content, status=status.HTTP_201_CREATED)
@@ -322,9 +341,14 @@ def categories(request):
     all_categories = Category.objects.all()
     content = []
     for category_ in all_categories:
+        if category_.image:
+            image = category_.image.url
+        else:
+            image = None
         temp = {
             'category_id': category_.id,
-            'category_name': category_.name
+            'category_name': category_.name,
+            'image': image,
         }
         content.append(temp)
     return Response(content, status=status.HTTP_200_OK)
@@ -351,7 +375,7 @@ def categories_details(request):
             if item_product.image:
                 image = item_product.image.url
             else:
-                 image = None
+                image = None
             temp = {
                 'product_id': item_product.id,
                 'product_name': item_product.name,
@@ -359,9 +383,14 @@ def categories_details(request):
                 'image': image,
             }
             products.append(temp)
+            if category.image:
+                image = category.image.url
+            else:
+                image = None
         temp = {
             'category_id': category_.id,
             'category_name': category_.name,
+            'image': category_.image,
             'products': products,
         }
         content.append(temp)
