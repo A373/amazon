@@ -193,7 +193,7 @@ def products(request):
         }
         final_products.append(temp)
     content = {
-        'products': filtered_products,
+        'products': final_products,
         'page': page,
         'limit': limit,
         'count': len(final_products)
