@@ -307,12 +307,12 @@ def category(request):
             return Response(content, status=status.HTTP_200_OK)
         except Category.DoesNotExist:
             content = {
-                'message': 'invalid product id'
+                'message': 'invalid category_id'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         except ValueError:
             content = {
-                'message': 'category id must be an integer'
+                'message': 'category_id must be an integer'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
 
