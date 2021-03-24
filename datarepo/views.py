@@ -206,6 +206,7 @@ def category(request):
                 if category_info.image:
                     image = category_info.image.url
                 else:
+                    image = None
                     content = {
                         'name': category_info.name,
                         'image': image,
