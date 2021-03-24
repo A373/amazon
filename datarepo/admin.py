@@ -5,7 +5,8 @@ from .models import Category, Product
 # Register your models here.
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ['id', 'name']
+    list_display = ['id', 'name', 'image']
+    list_filter = ['name']
 
 
 class ProductAdmin(admin.ModelAdmin):
