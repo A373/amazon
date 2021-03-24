@@ -161,6 +161,9 @@ def product(request):
 @api_view(['GET'])
 def products(request):
     category_id = request.GET.get('category_id', None)
+    page = int(request.GET.get('page', 0))
+    limit = int(request.GET.get('limit', 5))
+
     if category_id is None:
         all_products = Product.objects.all()
     elif category_id is not None:
