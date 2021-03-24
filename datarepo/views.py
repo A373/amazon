@@ -176,7 +176,7 @@ def products(request):
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
     final_products = []
-    filtered_products = all_products[(page * limit):(page * limit) + limit]
+    filtered_products = products[(page * limit):(page * limit) + limit]
     for temp_product in filtered_products:
         if temp_product.image:
             image_url = temp_product.image.url
