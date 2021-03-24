@@ -191,7 +191,7 @@ def products(request):
             'category_name': temp_product.category.name,
             'image_url': image_url,
         }
-        filtered_products.append(temp)
+        final_products.append(temp)
     content = {
         'products': filtered_products,
         'page': page,
