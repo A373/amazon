@@ -391,7 +391,7 @@ def categories_details(request):
         temp = {
             'category_id': category_.id,
             'category_name': category_.name,
-            'image': image.url,
+            'image': image,
             'products': products,
         }
         content.append(temp)
