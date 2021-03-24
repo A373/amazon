@@ -383,8 +383,8 @@ def categories_details(request):
                 'image': image,
             }
             products.append(temp)
-            if category.image:
-                image = category.image.url
+            if category_.image:
+                image = category_.image.url
             else:
                 image = None
         temp = {
