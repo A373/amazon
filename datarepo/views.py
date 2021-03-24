@@ -207,11 +207,11 @@ def category(request):
                     image = category_info.image.url
                 else:
                     image = None
-                    content = {
-                        'name': category_info.name,
-                        'image': image,
+                content = {
+                    'name': category_info.name,
+                    'image': image,
 
-                    }
+                }
                 return Response(content, status=status.HTTP_200_OK)
             except Category.DoesNotExist:
                 content = {
@@ -391,7 +391,7 @@ def categories_details(request):
         temp = {
             'category_id': category_.id,
             'category_name': category_.name,
-            'image': category_.image,
+            'image': image.url,
             'products': products,
         }
         content.append(temp)
