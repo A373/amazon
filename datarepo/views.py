@@ -161,7 +161,7 @@ def product(request):
 @api_view(['GET'])
 def products(request):
     category_id = request.GET.get('category_id', None)
-    page = int(request.GET.get('page', 0))
+    page = int(request.POST.get('page', 0))
     limit = int(request.GET.get('limit', 5))
     print(f'page ---> {page}')
     print(f'limit ---> {limit}')
@@ -176,7 +176,7 @@ def products(request):
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
     final_products = []
-    filtered_products = products[(page * limit):(page * limit) + limit]
+    filtered_products = all_products[(page * limit):(page * limit) + limit]
     for temp_product in filtered_products:
         if temp_product.image:
             image_url = temp_product.image.url
