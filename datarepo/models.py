@@ -19,6 +19,7 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     price = models.FloatField()
     image = models.ImageField(blank=True, null=True, default=None)
+    description = models.TextField(max_length=255)
 
     class Meta:
         verbose_name_plural = 'products'
