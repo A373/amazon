@@ -24,6 +24,7 @@ def product(request):
                     'image': product_info.image.url,
                     'category_id': product_info.category_id,
                     'category_name': product_info.category.name,
+                    'description': product_info.description,
                 }
                 return Response(content, status=status.HTTP_200_OK)
             except Product.DoesNotExist:
@@ -41,14 +42,15 @@ def product(request):
         name = request.POST.get('name', None)
         price = request.POST.get('price', None)
         image = request.FILES.get('image', None)
-        if category_id is None or name is None or price is None or image is None:
+        description = request.POST.get('description', None)
+        if category_id is None or name is None or price is None or image is None or description is None:
             content = {
-                'message': 'category_id or name or price or image fields are mandatory'
+                'message': 'category_id or name or price or image description fields are mandatory'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        if name.lstrip() == ' ' is None or category_id is None or price is None or image is None:
+        if name.lstrip() == ' ' is None or category_id is None or price is None or image is None or description is None:
             content = {
-                'message': 'name  or category_id or price or image cannot be empty'
+                'message': 'name  or category_id or price or image or description cannot be empty'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         try:
@@ -57,6 +59,7 @@ def product(request):
                 name=name,
                 price=price,
                 image=image,
+                description=description,
             )
             new_product.save()
             content = {
@@ -66,6 +69,7 @@ def product(request):
                     'name': new_product.name,
                     'price': new_product.price,
                     'image': new_product.image.url,
+                    'description': new_product.description,
                     'category_id': new_product.category_id,
                     'category_name': new_product.category.name,
                 }
@@ -87,6 +91,7 @@ def product(request):
         new_category_id = request.POST.get('category_id', None)
         product_id = request.POST.get('product_id', None)
         new_image = request.FILES.get('image', None)
+        new_description = request.POST.get('description', None)
         if product_id is None:
             content = {
                 'message': 'product_id is mandatory'
@@ -103,6 +108,7 @@ def product(request):
             product_info.price = new_price if new_price is not None else product_info.price
             product_info.category_id = new_category_id if new_category_id is not None else product_info.category_id
             product_info.image = new_image if new_image is not None else product_info.image
+            product_info.description = new_description if new_description is not None else product_info.description
             product_info.save()
             content = {
                 'message': 'product has been updated',
@@ -111,6 +117,7 @@ def product(request):
                     'name': product_info.name,
                     'price': product_info.price,
                     'image': product_info.image.url,
+                    'description': product_info.description,
                     'category_id': product_info.category_id,
                     'category_name': product_info.category.name
 
@@ -160,7 +167,9 @@ def product(request):
 
 @api_view(['GET'])
 def products(request):
+    print(request.GET)
     category_id = request.GET.get('category_id', None)
+
     page = int(request.POST.get('page', 0))
     limit = int(request.GET.get('limit', 5))
     print(f'page ---> {page}')
@@ -190,6 +199,7 @@ def products(request):
             'category_id': temp_product.category_id,
             'category_name': temp_product.category.name,
             'image_url': image_url,
+            'description': temp_product.description,
         }
         final_products.append(temp)
     content = {
