@@ -401,6 +401,7 @@ def categories_details(request):
             temp = {
                 'product_id': item_product.id,
                 'product_name': item_product.name,
+                'description': item_product.description,
                 'product_price': item_product.price,
                 'image': image,
             }
