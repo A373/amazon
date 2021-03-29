@@ -125,7 +125,7 @@ def product(request):
                     'price': product_info.price,
                     'image': product_info.image.url,
                     'description': product_info.description,
-                    'rating':product_info.rating,
+                    'rating': product_info.rating,
                     'category_id': product_info.category_id,
                     'category_name': product_info.category.name
 
@@ -179,7 +179,7 @@ def products(request):
     category_id = request.GET.get('category_id', None)
 
     page = int(request.POST.get('page', 0))
-    limit = int(request.GET.get('limit', 5))
+    limit = int(request.GET.get('limit', 75))
     print(f'page ---> {page}')
     print(f'limit ---> {limit}')
     if category_id is None:
