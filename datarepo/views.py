@@ -413,7 +413,7 @@ def categories_details(request):
                 'description': item_product.description,
                 'product_price': item_product.price,
                 'image': image,
-                'rating': rating,
+                'rating': item_product.rating,
             }
             products.append(temp)
             if category_.image:
