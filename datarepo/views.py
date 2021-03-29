@@ -25,6 +25,8 @@ def product(request):
                     'category_id': product_info.category_id,
                     'category_name': product_info.category.name,
                     'description': product_info.description,
+                    'rating': product_info.rating,
+
                 }
                 return Response(content, status=status.HTTP_200_OK)
             except Product.DoesNotExist:
@@ -43,14 +45,15 @@ def product(request):
         price = request.POST.get('price', None)
         image = request.FILES.get('image', None)
         description = request.POST.get('description', None)
-        if category_id is None or name is None or price is None or image is None or description is None:
+        rating = request.POST.get('rating', None)
+        if category_id is None or name is None or price is None or image is None or description is None or rating is None:
             content = {
-                'message': 'category_id or name or price or image description fields are mandatory'
+                'message': 'category_id or name or price or image description or rating fields are mandatory'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        if name.lstrip() == ' ' is None or category_id is None or price is None or image is None or description is None:
+        if name.lstrip() == ' ' is None or category_id is None or price is None or image is None or description is None or rating is None:
             content = {
-                'message': 'name  or category_id or price or image or description cannot be empty'
+                'message': 'name  or category_id or price or image or description or rating cannot be empty'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         try:
@@ -60,6 +63,7 @@ def product(request):
                 price=price,
                 image=image,
                 description=description,
+                rating=rating,
             )
             new_product.save()
             content = {
@@ -70,6 +74,7 @@ def product(request):
                     'price': new_product.price,
                     'image': new_product.image.url,
                     'description': new_product.description,
+                    'rating': new_product.rating,
                     'category_id': new_product.category_id,
                     'category_name': new_product.category.name,
                 }
@@ -92,6 +97,7 @@ def product(request):
         product_id = request.POST.get('product_id', None)
         new_image = request.FILES.get('image', None)
         new_description = request.POST.get('description', None)
+        new_rating = request.POST.get('rating', None)
         if product_id is None:
             content = {
                 'message': 'product_id is mandatory'
@@ -109,6 +115,7 @@ def product(request):
             product_info.category_id = new_category_id if new_category_id is not None else product_info.category_id
             product_info.image = new_image if new_image is not None else product_info.image
             product_info.description = new_description if new_description is not None else product_info.description
+            product_info.rating = new_rating if new_rating is not None else product_info.rating
             product_info.save()
             content = {
                 'message': 'product has been updated',
@@ -118,6 +125,7 @@ def product(request):
                     'price': product_info.price,
                     'image': product_info.image.url,
                     'description': product_info.description,
+                    'rating':product_info.rating,
                     'category_id': product_info.category_id,
                     'category_name': product_info.category.name
 
@@ -200,6 +208,7 @@ def products(request):
             'category_name': temp_product.category.name,
             'image_url': image_url,
             'description': temp_product.description,
+            'rating': temp_product.rating,
         }
         final_products.append(temp)
     content = {

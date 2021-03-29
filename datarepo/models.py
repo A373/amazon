@@ -20,6 +20,7 @@ class Product(models.Model):
     price = models.FloatField()
     image = models.ImageField(blank=True, null=True, default=None)
     description = models.TextField(max_length=255)
+    rating = models.FloatField()
 
     class Meta:
         verbose_name_plural = 'products'

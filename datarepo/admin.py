@@ -10,7 +10,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ['id', 'category', 'name', 'price', 'image', 'description']
+    list_display = ['id', 'category', 'name', 'price', 'image', 'description', 'rating']
     list_filter = ['category']
 
 
