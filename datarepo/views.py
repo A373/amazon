@@ -304,9 +304,9 @@ def category(request):
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         try:
-            if new_name.lstrip() is not True:
+            if new_name.lstrip() is not None and new_name.lstrip() == '':
                 content = {
-                    'message': 'name must be a string'
+                    'message': 'name cannot be empty'
                 }
                 return Response(content, status=status.HTTP_400_BAD_REQUEST)
             category_info = Category.objects.get(id=category_id)
