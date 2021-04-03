@@ -304,7 +304,7 @@ def category(request):
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
         try:
-            if new_name.isalpha() is not True:
+            if new_name.lstrip() is not True:
                 content = {
                     'message': 'name must be a string'
                 }
