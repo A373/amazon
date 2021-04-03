@@ -51,7 +51,7 @@ def product(request):
                 'message': 'category_id or name or price or image description or rating fields are mandatory'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        if name.lstrip() == ' ' is None or category is None or price is None or image is None or description is None or rating is None:
+        if name.lstrip() == ' ' is None or category_id is None or price is None or image is None or description is None or rating is None:
             content = {
                 'message': 'name  or category_id or price or image or description or rating cannot be empty'
             }
