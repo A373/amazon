@@ -46,7 +46,7 @@ def product(request):
         image = request.FILES.get('image', None)
         description = request.POST.get('description', None)
         rating = request.POST.get('rating', None)
-        if category_id is None or name is None or price is None or image is None or description is None or rating is None:
+        if category_id is None or name is None or price is None:
             content = {
                 'message': 'category_id or name or price or image description or rating fields are mandatory'
             }
