@@ -46,12 +46,12 @@ def product(request):
         image = request.FILES.get('image', None)
         description = request.POST.get('description', None)
         rating = request.POST.get('rating', None)
-        if category_id is None or name is None or price is None:
+        if category_id is None or name is None or price is None or image is None or description is None or rating is None:
             content = {
                 'message': 'category_id or name or price or image description or rating fields are mandatory'
             }
             return Response(content, status=status.HTTP_400_BAD_REQUEST)
-        if name.lstrip() == ' ' is None or category_id is None or price is None or image is None or description is None or rating is None:
+        if name.lstrip() == ' ' is None:
             content = {
                 'message': 'name  or category_id or price or image or description or rating cannot be empty'
             }
